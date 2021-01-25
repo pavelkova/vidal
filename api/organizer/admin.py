@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Card, NoteCard, LinkCard, Reference, Comment, Link, Activity
+from .models import Card, NoteCard, LinkCard, CardAttachment, Reference, Comment, Link, LinkAttachment, Activity
 
 admin.site.register(Card)
 admin.site.register(NoteCard)

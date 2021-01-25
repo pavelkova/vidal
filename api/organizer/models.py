@@ -42,9 +42,10 @@ class CardType(models.Model):
                                 primary_key=True,
                                 on_delete=models.CASCADE)
 
-    def create():
-        activity = Activity('created', target=card)
+    def save_activity(self, verb='created'):
+        activity = Activity(verb=verb, target=self.card)
         activity.save()
+        print(activity)
         return activity
 
     class Meta:
@@ -89,9 +90,12 @@ class CardAttachment(models.Model):
                              default=None,
                              related_name='%(class)s',
                              on_delete=models.CASCADE)
-    def create():
-        activity = Activity(verb='created', action=action, target=card)
-        return
+
+    def save_activity(self, verb='created'):
+        activity = Activity(verb=verb, action=self.action, target=self.card)
+        activity.save()
+        print(activity)
+        return activity
 
     class Meta:
         abstract=True
@@ -108,6 +112,12 @@ class LinkAttachment(CardAttachment):
                              on_delete=models.CASCADE)
     pass
 
+class NoteRevision(CardAttachment):
+    note = models.ForeignKey('NoteCard',
+                             default=None,
+                             on_delete=models.CASCADE)
+    content = models.TextField()
+    pass
 
 class NoteInlineItem(models.Model):
     note = models.ForeignKey('NoteCard',
