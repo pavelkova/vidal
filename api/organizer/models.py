@@ -5,7 +5,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-
 class Card(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -17,22 +16,49 @@ class Card(models.Model):
         return self.title
 
 
-class NoteCard(models.Model):
+class ActionItem(models.Model):
+    pass
+
+
+class Activity(models.Model):
+    verb = models.CharField(max_length=140, default='created')
+    action = models.ForeignKey('ActionItem',
+                               null=True,
+                               on_delete=models.CASCADE)
+    target = models.ForeignKey(Card,
+                               default=None,
+                               related_name='activities',
+                               on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    # utc_timestamp = models.DateTimeField(auto_now_add=True)
+    # tz = models.CharField()
+    # date = models.DateField()
+    pass
+
+
+class CardType(models.Model):
     card = models.OneToOneField(Card,
                                 default=None,
                                 primary_key=True,
                                 on_delete=models.CASCADE)
+
+    def create():
+        activity = Activity('created', target=card)
+        activity.save()
+        return activity
+
+    class Meta:
+        abstract = True
+
+
+class NoteCard(CardType):
     content = models.TextField()
 
     def __str__(self):
         return self.content
 
 
-class LinkCard(models.Model):
-    card = models.OneToOneField(Card,
-                                default=None,
-                                primary_key=True,
-                                on_delete=models.CASCADE)
+class LinkCard(CardType):
     link = models.ForeignKey('Link',
                              default=None,
                              on_delete=models.CASCADE)
@@ -54,32 +80,53 @@ class Reference(models.Model):
     pass
 
 
-class Comment(models.Model):
+class CardAttachment(models.Model):
+    action = models.OneToOneField(ActionItem,
+                                  default=None,
+                                  primary_key=True,
+                                  on_delete=models.CASCADE)
     card = models.ForeignKey(Card,
                              default=None,
-                             related_name='comments',
+                             related_name='%(class)s',
                              on_delete=models.CASCADE)
+    def create():
+        activity = Activity(verb='created', action=action, target=card)
+        return
+
+    class Meta:
+        abstract=True
+
+
+class Comment(CardAttachment):
     content = models.CharField(max_length=1200)
     pass
 
 
-class Activity(models.Model):
-    # VERB_CHOICES = [('CREATED', 'created'),
-    #                 ('UPDATED', 'updated',
-    #                  'REFERENCED', 'referenced',
-    #                  'INCLUDED')]
-    verb = models.CharField(max_length=140, default='created')
-    action = models.ForeignKey('ActionItem',
-                               null=True,
-                               on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    target = models.ForeignKey(Card,
-                               default=None,
-                               related_name='activities',
-                               on_delete=models.CASCADE)
+class LinkAttachment(CardAttachment):
+    link = models.ForeignKey('Link',
+                             default=None,
+                             on_delete=models.CASCADE)
     pass
 
-class ActionItem(models.Model):
+
+class NoteInlineItem(models.Model):
+    note = models.ForeignKey('NoteCard',
+                             default=None,
+                             on_delete=models.CASCADE)
+
+    class Meta:
+        abstract=True
+
+class InlineLink(NoteInlineItem):
+    link = models.ForeignKey('Link',
+                             default=None,
+                             on_delete=models.CASCADE)
+    pass
+
+class InlineReference(NoteInlineItem):
+    referemce = models.ForeignKey('Reference',
+                                  default=None,
+                                  on_delete=models.CASCADE)
     pass
 
 # comment added to card
