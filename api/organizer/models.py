@@ -12,6 +12,7 @@ class Card(models.Model):
     references = models.ManyToManyField('self',
                                         through='Reference',
                                         through_fields=('to_card', 'from_card'))
+
     def __str__(self):
         return self.title
 
@@ -21,6 +22,10 @@ class ActionItem(models.Model):
 
 
 class Activity(models.Model):
+
+    class Meta:
+        verbose_name_plural = 'activities'
+
     verb = models.CharField(max_length=140, default='created')
     action = models.ForeignKey('ActionItem',
                                null=True,
