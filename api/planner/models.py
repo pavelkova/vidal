@@ -18,18 +18,7 @@ class Task(models.Model):
     project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', null=True, related_name='subtask', on_delete=models.CASCADE)
     status = models.CharField(max_length=140, choices=default_statuses, default='TODO')
-    pass
-
-
-class Recurring(models.Model):
-    start_date = models.DateTimeField(default=None)
-    end_date = models.DateTimeField(null=True)
-    period = models.CharField(max_length=140)
-    frequency = models.CharField(max_length=140)
-
-    class Meta:
-        abstract=True
-
+    is_repeatable = models.BooleanField(default=False)
     pass
 
 
@@ -45,4 +34,16 @@ class CalendarEntry(models.Model):
     entry_type = models.DateTimeField(choices=calendar_entry_types)
     date = models.DateTimeField(default=None)
     is_all_day = models.BooleanField(default=True)
+    pass
+
+
+class Recurrence(models.Model):
+    start_date = models.DateTimeField(default=None)
+    end_date = models.DateTimeField(null=True)
+    period = models.CharField(max_length=140)
+    frequency = models.CharField(max_length=140)
+
+    class Meta:
+        abstract=True
+
     pass
