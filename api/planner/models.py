@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Project(models.Model):
-    title = models.CharField(max_length=140)
+    title = models.CharField(max_length=140, default=None)
     pass
 
 
@@ -14,7 +14,7 @@ default_statuses = [('TODO', 'todo'),
                     ('DONE', 'done')]
 
 class Task(models.Model):
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, default=None)
     project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', null=True, related_name='subtask', on_delete=models.CASCADE)
     status = models.CharField(max_length=140, choices=default_statuses, default='TODO')

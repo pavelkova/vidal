@@ -1,0 +1,21 @@
+type Project {
+  title: String!
+  tasks: [Task]
+}
+
+type Task {
+  content: String!
+  project: Project!
+  status: String
+  is_repeatable: Boolean
+}
+
+type Query {
+  allTasks: [Task]
+  projectByName(title: String!): Project!
+}
+
+type Mutation {
+  addTask(content: String!, project: Project!, status: String, is_repeatable: Boolean): Task!
+  addProject(title: String!): Project!
+}
