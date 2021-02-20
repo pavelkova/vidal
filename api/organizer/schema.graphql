@@ -1,0 +1,63 @@
+interface Card {
+  id: ID!
+  title: String!
+  references: [Reference]
+  activities: [Activity]
+}
+
+type Note {
+  content: String!
+}
+
+type NoteRevision {
+  note: NoteCard!
+  content: String!
+
+}
+
+type NoteCard implements Card {
+  note: Note!
+  revisions: [NoteRevision]
+}
+
+type Link {
+  url: String!
+}
+
+type LinkCard implements Card {
+  link: Link!
+}
+
+type LinkCardInput {
+  url: String!
+}
+
+type Reference {
+  to: Card!
+  from: Card!
+}
+
+interface CardAttachment {
+  action: ActionItem!
+  card: Card!
+}
+
+type Comment {
+  content: String!
+}
+
+union ActionItem = Reference | Comment | LinkAttachment | NoteRevision
+
+type Activity {
+  verb: String!
+  action: ActionItem
+  target: Card!
+  timestamp: String!
+}
+
+type Mutation {
+  createNoteCard(content: String!): NoteCard!
+  createLinkCard(): LinkCard!
+  createComment(content: String!, card: Card!): Comment!
+
+}

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from base import models as base_models
 '''
 Connection types for data:
 - INCLUSION/TRANSCLUSION
@@ -23,7 +24,7 @@ parent objects opening a variety of special properties, e.g. default tags, works
 '''
 USER selects 'CREATE CARD'
      enters STRING as card title/text
-     --- USER selects 'CARD TYPE' (from menu or by prefixing with keyword) or uses default (default: note, OR user setting, or user last used)
+     --- USER selects 'CARD TYPE' (from menu or by prefixing with keyword) or uses defaul t (default: note, OR user setting, or user last used)
      -> API creates card and associated cardType object
      -> ACTIVITY is created for new card
      --- activity for card and cardtype object are the same:
@@ -32,17 +33,33 @@ USER selects 'CREATE CARD'
      --- activity is 'LAST_ACTIVE_AT' when card is referenced
 '''
 
-class OwnerTimeStamp(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class Page(models.Model):
+    title = models.CharField(max_length=140, default=None)
+    # view = column, outline, grid
+    pass
 
+class Section(models.Model):
+    title = models.CharField(max_length=140, default=None)
+    page = models.ForeignKey(Page,
+                               default=None,
+                               related_name='sections',
+                               on_delete=models.CASCADE)
+    # sort_by
+    pass
+
+
+class PositionedCard(models.Model):
+    position = models.PositiveIntegerField()
+    card = models.ForeignKey('Card',
+                             default=None,
+                             related_name='included_on',
+                             on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, null=True, on_delete=models.CASCADE)
     class Meta:
         abstract = True
 
 
-class Card(OwnerTimeStamp):
+class Card(base_models.OwnerTimeStamp):
     references = models.ManyToManyField('self',
                                         through='Reference',
                                         through_fields=('to_card', 'from_card'))
@@ -55,7 +72,7 @@ class ActionItem(models.Model):
     pass
 
 
-class Activity(OwnerTimeStamp):
+class Activity(base_models.OwnerStamp):
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -110,7 +127,7 @@ class LinkCard(CardType):
     pass
 
 
-class Link(OwnerTimeStamp):
+class Link(models.Model):
     '''
 Link can relate to a card...
 AS the primary/top level/one-to-one item
@@ -122,7 +139,7 @@ AS an <a> tag parsed from the content of a note card
     pass
 
 
-class Reference(models.Model):
+class Reference(base_models.OwnerStamp):
     to_card = models.ForeignKey(Card,
                                 on_delete=models.CASCADE)
     from_card = models.ForeignKey(Card,
@@ -132,7 +149,7 @@ class Reference(models.Model):
     pass
 
 
-class CardAttachment(models.Model):
+class CardAttachment(base_models.OwnerStamp):
     action = models.OneToOneField(ActionItem,
                                   default=None,
                                   primary_key=True,
@@ -205,6 +222,6 @@ class Checklist(CardAttachment):
     pass
 
 class ChecklistItem(models.Model):
-    content = models.StringField(max_length=1000)
+    content = models.CharField(max_length=1000)
     checklist = models.ForeignKey(Checklist, default=None, on_delete=models.CASCADE)
     pass
