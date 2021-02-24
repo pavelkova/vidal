@@ -8,7 +8,7 @@ from base import models as base_models
 
 class Page(models.Model):
     title = models.CharField(max_length=140, default=None)
-    cards = models.ManyToManyField(Card,
+    cards = models.ManyToManyField('Card',
                                    through='PositionedCard')
     pass
 
@@ -21,6 +21,9 @@ class Section(models.Model):
 
 class Card(models.Model):
     title = models.CharField(max_length=140, default=None)
+    parent = models.ForeignKey(Page,
+                               default=None,
+                               on_delete=models.CASCADE)
     # description = models.CharField(max_length=1000, default=None)
     pass
 
@@ -41,7 +44,10 @@ class CardItem(models.Model):
     card = models.ForeignKey('Card',
                              default=None,
                              on_delete=models.CASCADE)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE)
+    parent = models.ForeignKey('self',
+                               null=True,
+                               related_name='children',
+                               on_delete=models.CASCADE)
     mime_type = models.CharField(max_length=140) # ?
     content = models.TextField()
     # media = single or ordered gallery of embedded or uploaded photo/video
@@ -55,8 +61,27 @@ class CardItem(models.Model):
     # code block
     pass
 
-class CardTemplate(models.Model):
-    # user - optional, for custom templates
-    properties = models.JSONField()
-    # context
+class Note(CardItem):
+    class Meta:
+        proxy = True
+
+
+class Link(models.Model):
+    description = models.CharField(max_length=140)
+    url = models.URLField()
+
+class MediaItem(models.Model):
+    mime_type = models.CharField(max_length=500)
+    link = models.ForeignKey(Link, default=None, on_delete=models.CASCADE)
+    attachment = models.FileField(null=True)
+    pass
+
+class MediaGalleryItem(models.Model):
+    item = models.ForeignKey(MediaItem, default=None, on_delete=models.CASCADE)
+    position = models.PositiveIntegerField()
+    pass
+
+class MediaGallery(models.Model):
+    items = models.ManyToManyField('MediaItem',
+                                   through='MediaGalleryItem')
     pass
