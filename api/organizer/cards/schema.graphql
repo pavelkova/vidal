@@ -1,0 +1,40 @@
+type Card {
+}
+
+type Query {
+}
+
+type Mutation {
+  createCard
+  updateCard
+  createCardTemplate
+  updateCardTemplate
+  createLog
+  updateLog
+  createLogTemplate
+  updateLogTemplate
+
+}
+
+# add film to library
+# add film to watch list
+# mark film as watched
+
+# media (gallery)
+# task (list/tree)
+# note/content
+# link
+
+# TEMPLATES
+# clipped web page
+## content
+## properties: author, date published, title,
+# film
+## title, director, year, language, country, starring
+# book
+## title, author, publisher, year, language, file, goodreads link
+# recipe
+
+# exercise
+
+# quote - formatted content, quote + inline reference or link + properties: title, author
