@@ -48,27 +48,20 @@ class PositionedCard(Position):
     is_minimized = models.BooleanField(default=False)
     pass
 
-class CardItem(Position):
-    # parent = models.ForeignKey('self',
-    #                            null=True,
-    #                            default=None,
-    #                            related_name='children',
-    #                            on_delete=models.CASCADE)
-    # depth = models.PositiveIntegerField(default=0)
-    # media = single or ordered gallery of embedded or uploaded photo/video
-
-    # note
-    # link - title (char), url (url)
-    # saved web page - title, link,
-    # task
-    # gallery - title
-    ## item: position, image url/field, video url/filefield, description
-    # code block
+class Block(Position):
     pass
 
-class Note(CardItem):
+class BlockAsPk(models.Model):
+    block = models.OneToOneField(Block,
+                                 default=None,
+                                 primary_key=True,
+                                 on_delete=models.CASCADE)
     class Meta:
-        proxy = True
+        abstract=True
+
+class Note(BlockAsPk):
+    content = model.JSONField()
+    pass
 
 class InlineObject(models.Model):
     inline = models.BooleanField(default=False)
@@ -114,6 +107,11 @@ class Task(models.Model):
 
     status = CharField(choices=StatusChoices.choices,
                        default=StatusChoices.TODO)
+    parent = models.ForeignKey('self',
+                               null=True,
+                               default=None,
+                               related_name='children',
+                               on_delete=models.CASCADE)
     pass
 
 class ThingOfFiniteTime(models.Model):
@@ -203,14 +201,33 @@ class TaskLog(models.Model):
 
 class Exercise(models.Model):
     title = models.CharField(max_length=500)
+    equipment_options = models.ManyToManyField(ExerciseEquipment)
+    # set_options = duration, duration + weight, reps only, assisted reps, reps + weights
     # equipment options
     # log options
     # media gallery
     description = models.TextField()
     pass
 
+class ExerciseEquipment(models.Model):
+    title = models.CharField(max_length=140)
+    pass
+
+class SetType(models.Model):
+    title = models.CharField(max_length=140)
+    pass
+
+class SetTypeLog(models.Model):
+    # duration = models.
+    # reps = models.PositiveIntegerField()
+    # weight = models.
+    is_assisted = models.BooleanField(default=False)
+    position = models.PositiveIntegerField()
+    pass
+
 class ExerciseLog(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    equipment = models.ForeignKey(ExerciseEquipment, on_delete=models.CASCADE)
     pass
 
 class ExerciseGroup(models.Model):
@@ -219,10 +236,31 @@ class ExerciseGroup(models.Model):
     pass
 
 class Workout(models.Model):
-
+    exercises = models.ManyToManyField(Exercise)
     pass
 
 class WorkoutLog(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
     exercises = models.ManyToManyField(ExerciseLog)
+    pass
+
+
+class Entity(models.Model):
+    title = models.CharField(max_length=140)
+    category = models.ForeignKey('EntityCategory', models.on_delete=CASCADE)
+    description = models.TextField()
+    pass
+
+class EntityCategory(models.Model):
+    title = models.CharField(max_length=140)
+    special_properties = models.JSONField()
+    parent = models.ForeignKey('self',
+                               related_name='subcategories',
+                               on_delete=CASCADE)
+    pass
+
+class EntityRelationship(models.Model):
+    # many to many - card? card item?
+    entity = models.ForeignKey(Entity)
+    relationship = models.CharField(max_length=140)
     pass

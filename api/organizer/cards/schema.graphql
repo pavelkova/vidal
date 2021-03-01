@@ -38,3 +38,35 @@ type Mutation {
 # exercise
 
 # quote - formatted content, quote + inline reference or link + properties: title, author
+
+type MediaGalleryItem {
+  mimeType: String!
+  url: String!
+  title: String!
+  description: String
+  position: Int!
+}
+
+type MediaGallery {
+  title: String!
+  items: [MediaGalleryItem]
+}
+
+type CodeBlock {
+  syntax: String
+  content: String
+}
+
+type Task {
+  status: String!
+  title: String!
+  subtasks: [Task]
+}
+
+type CalendarEntry {
+  start: DateTime
+  end: EndTime
+  location: [Place]
+  
+}
+
