@@ -1,0 +1,16 @@
+type TimeLog {
+  start: DateTime!
+  end: DateTime
+  project: Project!
+  task: Task
+  description: String
+  tags: [Tag]
+}
+
+type CalendarEntry {
+  date: DateTime!
+  entryType: String!
+  isAllDay: Boolean!
+  title: String!
+  location: String
+}

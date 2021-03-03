@@ -61,6 +61,7 @@ class BlockAsPk(models.Model):
 
 class Note(BlockAsPk):
     content = model.JSONField()
+    text = model.TextField()
     pass
 
 class InlineObject(models.Model):
@@ -140,6 +141,8 @@ class Reference(models.Model):
     pass
 
 class CalendarEvent(models.Model):
+    date = models.DateTimeField(default=None)
+    is_all_day = models.BooleanField(default=True)
     pass
 
 class Media(models.Model):
@@ -199,52 +202,6 @@ class Task(models.Model):
 class TaskLog(models.Model):
     pass
 
-class Exercise(models.Model):
-    title = models.CharField(max_length=500)
-    equipment_options = models.ManyToManyField(ExerciseEquipment)
-    # set_options = duration, duration + weight, reps only, assisted reps, reps + weights
-    # equipment options
-    # log options
-    # media gallery
-    description = models.TextField()
-    pass
-
-class ExerciseEquipment(models.Model):
-    title = models.CharField(max_length=140)
-    pass
-
-class SetType(models.Model):
-    title = models.CharField(max_length=140)
-    pass
-
-class SetTypeLog(models.Model):
-    # duration = models.
-    # reps = models.PositiveIntegerField()
-    # weight = models.
-    is_assisted = models.BooleanField(default=False)
-    position = models.PositiveIntegerField()
-    pass
-
-class ExerciseLog(models.Model):
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    equipment = models.ForeignKey(ExerciseEquipment, on_delete=models.CASCADE)
-    pass
-
-class ExerciseGroup(models.Model):
-    title = models.CharField(max_length=500)
-    exercises = models.ManyToManyField(Exercise)
-    pass
-
-class Workout(models.Model):
-    exercises = models.ManyToManyField(Exercise)
-    pass
-
-class WorkoutLog(models.Model):
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    exercises = models.ManyToManyField(ExerciseLog)
-    pass
-
-
 class Entity(models.Model):
     title = models.CharField(max_length=140)
     category = models.ForeignKey('EntityCategory', models.on_delete=CASCADE)
@@ -264,3 +221,17 @@ class EntityRelationship(models.Model):
     entity = models.ForeignKey(Entity)
     relationship = models.CharField(max_length=140)
     pass
+
+class Table(models.Model):
+    pass
+
+class TableColumn(models.Model):
+    table = models.ForeignKey(Table, )
+    title = models.CharField(max_length=140)
+    pass
+
+class TableCell(models.Model):
+    column = models.CharField(max_length=2)
+    row = models.PositiveIntegerField()
+    value =
+    

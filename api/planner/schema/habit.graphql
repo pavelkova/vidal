@@ -1,0 +1,6 @@
+type Habit {
+  title: String!
+  targetUnit: String!
+  targetType: String!
+
+}

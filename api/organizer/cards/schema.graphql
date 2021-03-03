@@ -1,3 +1,7 @@
+type Page {
+  title: String!
+}
+
 type Card {
 }
 
@@ -5,14 +9,7 @@ type Query {
 }
 
 type Mutation {
-  createCard
-  updateCard
-  createCardTemplate
-  updateCardTemplate
-  createLog
-  updateLog
-  createLogTemplate
-  updateLogTemplate
+  createPage(title: String!): Page!
 
 }
 
@@ -70,3 +67,48 @@ type CalendarEntry {
   
 }
 
+type MovieInput {
+  title: String!
+  year: Int
+  imdb_url: String
+}
+
+type Query {
+  getAllTasks: [Task]
+  getTask(id: ID!): Task
+  getTasksByProject(): [Task]
+  getDueTasks(): [Task]
+  getOverDueTasks(): [Task]
+  getScheduledTasks(): [Task]
+  getAllDateTasks(): [Task]
+
+  
+}
+
+type Mutation {
+  createTask
+  updateTask
+  setTaskScheduled
+  setTaskDue
+
+  createHabit
+  updateHabit
+  createHabitLog
+  updateHabitLog
+
+  createTimeLog
+  updateTimeLog
+
+  uploadImage(image: Upload!): Boolean!
+  uploadVideo(video: Upload!): Boolean!
+  uploadAudio(audio: Upload!): Boolean!
+  uploadDocument(document: Upload!): Boolean!
+
+  addImageUrl(url: String!): Boolean!
+  addVideoUrl(url: String!): Boolean!
+  addAudioUrl(url: String!): Boolean!
+  addDocumentUrl(url: String!): Boolean!
+
+  createPageReference(): Reference
+  createCardReference():
+}

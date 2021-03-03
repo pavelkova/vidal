@@ -36,6 +36,7 @@ USER selects 'CREATE CARD'
 class Page(models.Model):
     title = models.CharField(max_length=140, default=None)
     # view = column, outline, grid
+    # sort_by
     pass
 
 class Section(models.Model):

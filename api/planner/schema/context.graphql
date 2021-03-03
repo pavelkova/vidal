@@ -1,0 +1,24 @@
+type Tag {
+  title: String!
+  category: TagCategory
+  contextExclusive: Boolean!
+}
+
+type TagCategory {
+  title: String!
+  contextExclusive: Boolean!
+}
+
+type TagContext {
+  requiredTagCategories: [Category]
+  exclusiveTagCategories: [Category]
+  defaultTags: [Tag]
+  # contextFor: Habit | Project | RecurringTask | TimeLog
+}
+
+type Project {
+  title: String!
+  parent: Project
+  subprojects: [Project]
+  tasks: [Task]
+}

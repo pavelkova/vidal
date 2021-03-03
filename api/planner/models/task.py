@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class Project(models.Model):
     title = models.CharField(max_length=140, default=None)
@@ -18,7 +18,7 @@ default_statuses = [('TODO', 'todo'),
                     ('DONE', 'done')]
 
 class TaskCard(models.Model):
-    main = models.OneToOneField(Task)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE, parent_link=True, primary_key=True)
     description = models.TextField()
     project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
     is_repeatable = models.BooleanField(default=False)
@@ -42,30 +42,29 @@ class Subtask(model.Model):
     position = models.PositiveIntegerField()
     pass
 
-calendar_entry_types = [('DUE', 'due'),
-                        ('SCHEDULED', 'scheduled'),
-                        ('EVENT', 'event')]
 
-class CalendarEntry(models.Model):
-
-    class Meta:
-        verbose_name_plural = 'calendar entries'
-
-    entry_type = models.CharField(choices=calendar_entry_types)
-    date = models.DateTimeField(default=None)
-    is_all_day = models.BooleanField(default=True)
-
-    # @property is_overdue
+class StatusChange(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    from_status = models.CharField(max_length=140,
+                                   choices=default_statuses,
+                                   default='TODO')
+    to_status = models.CharField(max_length=140,
+                                 choices=default_statuses,
+                                 default='DONE')
     pass
 
+class Comment(models.Model):
+    card = models.ForeignKey(TaskCard, on_delete=models.CASCADE)
+    content = models.TextField()
 
-class Recurrence(models.Model):
-    start_date = models.DateTimeField(default=None)
-    end_date = models.DateTimeField(null=True)
-    period = models.CharField(max_length=140)
-    frequency = models.CharField(max_length=140)
+class Link(models.Model):
+    card = models.ForeignKey(TaskCard, on_delete=models.CASCADE)
+    title = models.CharField(max_length=500)
+    url = models.URLField()
+    description = models.TextField()
 
-    class Meta:
-        abstract=True
+    pass
 
+class Attachment(models.Model):
     pass
