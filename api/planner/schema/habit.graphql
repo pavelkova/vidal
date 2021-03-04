@@ -2,5 +2,16 @@ type Habit {
   title: String!
   targetUnit: String!
   targetType: String!
+}
 
+type HabitPeriod {
+  start: DateTime!
+  end: DateTime
+  targetAmount:
+}
+
+type HabitLog {
+  habit: Habit!
+  createdAt: DateTime!
+  quantity: Int!
 }

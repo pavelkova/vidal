@@ -21,4 +21,5 @@ type Project {
   parent: Project
   subprojects: [Project]
   tasks: [Task]
+  context: TagContext
 }

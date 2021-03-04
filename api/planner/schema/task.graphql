@@ -26,11 +26,6 @@ type Task {
   position: Int
 }
 
-
-
-type TaskLog {
-}
-
 type Query {
   getTaskCard(id: ID!): TaskCard
   allTaskCards: [TaskCard]

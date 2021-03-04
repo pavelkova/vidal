@@ -17,13 +17,6 @@ default_statuses = [('TODO', 'todo'),
                     ('CANCELLED', 'cancelled'),
                     ('DONE', 'done')]
 
-class TaskCard(models.Model):
-    task = models.OneToOneField(Task, on_delete=models.CASCADE, parent_link=True, primary_key=True)
-    description = models.TextField()
-    project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
-    is_repeatable = models.BooleanField(default=False)
-    pass
-
 class Task(models.Model):
     title = models.CharField(max_length=500, default=None)
     status = models.CharField(max_length=140,
@@ -42,6 +35,17 @@ class Subtask(model.Model):
     position = models.PositiveIntegerField()
     pass
 
+class TaskCard(models.Model):
+    task = models.OneToOneField(Task,
+                                on_delete=models.CASCADE,
+                                parent_link=True,
+                                primary_key=True,
+                                related_name='main_of')
+    description = models.TextField()
+    project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
+    is_repeatable = models.BooleanField(default=False)
+
+    pass
 
 class StatusChange(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
