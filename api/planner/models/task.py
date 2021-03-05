@@ -1,13 +1,14 @@
 from django.db import models
 from django.conf import settings
+from .time import CalendarEntry
 
 class Project(models.Model):
-    title = models.CharField(max_length=140, default=None)
+    title = models.CharField(max_length=500, default=None)
     parent = models.ForeignKey('self',
                                null=True,
                                default=None,
                                related_name='subprojects',
-                               models.on_delete=DELETE)
+                               on_delete=models.CASCADE)
     pass
 
 
@@ -18,20 +19,28 @@ default_statuses = [('TODO', 'todo'),
                     ('DONE', 'done')]
 
 class Task(models.Model):
-    title = models.CharField(max_length=500, default=None)
+    title = models.CharField(max_length=500,
+                             default=None)
     status = models.CharField(max_length=140,
                               choices=default_statuses,
                               default='TODO')
-    due = models.ForeignKey('CalendarEntry', on_delete=models.CASCADE)
-    scheduled = models.ForeignKey('CalendarEntry', on_delete=models.CASCADE)
+    due = models.ForeignKey(CalendarEntry,
+                            related_name='due_tasks',
+                            on_delete=models.CASCADE)
+    scheduled = models.ForeignKey(CalendarEntry,
+                                  related_name='scheduled_tasks',
+                                  on_delete=models.CASCADE)
     subtasks = models.ManyToManyField('self',
-                                      through='Subtasks',
-                                      through_fields=('parent', 'subtask'))
+                                      through='Subtask',
+                                      through_fields=('parent','child'))
     pass
 
-class Subtask(model.Model):
-    parent = models.ForeignKey(Task, on_delete=models.CASCADE)
-    subtask = models.ForeignKey(Task, on_delete=models.CASCADE)
+class Subtask(models.Model):
+    parent = models.ForeignKey(Task,
+                               related_name='supertask',
+                               on_delete=models.CASCADE)
+    child = models.ForeignKey(Task,
+                              on_delete=models.CASCADE)
     position = models.PositiveIntegerField()
     pass
 
@@ -42,13 +51,15 @@ class TaskCard(models.Model):
                                 primary_key=True,
                                 related_name='main_of')
     description = models.TextField()
-    project = models.ForeignKey(Project, default=None, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project,
+                                default=None,
+                                on_delete=models.CASCADE)
     is_repeatable = models.BooleanField(default=False)
-
     pass
 
 class StatusChange(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task,
+                             on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     from_status = models.CharField(max_length=140,
                                    choices=default_statuses,
@@ -59,15 +70,17 @@ class StatusChange(models.Model):
     pass
 
 class Comment(models.Model):
-    card = models.ForeignKey(TaskCard, on_delete=models.CASCADE)
+    card = models.ForeignKey(TaskCard,
+                             on_delete=models.CASCADE)
     content = models.TextField()
+    pass
 
 class Link(models.Model):
-    card = models.ForeignKey(TaskCard, on_delete=models.CASCADE)
+    card = models.ForeignKey(TaskCard,
+                             on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     url = models.URLField()
     description = models.TextField()
-
     pass
 
 class Attachment(models.Model):

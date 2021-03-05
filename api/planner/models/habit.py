@@ -5,10 +5,8 @@ class Habit(models.Model):
     title = models.CharField(max_length=500)
     target_unit = models.CharField(max_length=140)
     target_value = models.PositiveIntegerField()
-    period_length = models.PositiveIntegerField()
-    rhythm = models.PositiveIntegerField()
-
-
+    period_length = models.SmallIntegerField() # in days or months
+    rhythm = models.PositiveIntegerField() # how many periods in a repeating pattern
     pass
 
 class HabitPeriod(models.Model):
@@ -21,4 +19,10 @@ class HabitPeriod(models.Model):
     pass
 
 class HabitLog(models.Model):
+    period = models.ForeignKey(HabitPeriod,
+                               related_name='logs',
+                               on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    timestamp = models.DateTimeField()
+
     pass

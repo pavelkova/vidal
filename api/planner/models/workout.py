@@ -3,7 +3,7 @@ from django.conf import settings
 
 class Exercise(models.Model):
     title = models.CharField(max_length=500)
-    equipment_options = models.ManyToManyField(ExerciseEquipment)
+    equipment_options = models.ManyToManyField('ExerciseEquipment')
     # set_options = duration, duration + weight, reps only, assisted reps, reps + weights
     # equipment options
     # log options

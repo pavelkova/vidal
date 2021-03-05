@@ -10,11 +10,11 @@ class CalendarEntry(models.Model):
     class Meta:
         verbose_name_plural = 'calendar entries'
 
-    entry_type = models.CharField(choices=calendar_entry_types)
+    entry_type = models.CharField(max_length=140,
+                                  choices=calendar_entry_types)
     date = models.DateTimeField(default=None)
     is_all_day = models.BooleanField(default=True)
 
-    # @property is_overdue
     pass
 
 
